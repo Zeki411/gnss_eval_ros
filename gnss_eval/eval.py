@@ -71,12 +71,12 @@ class GnssEval(Node):
 
     
     def sub_fix_callback(self, msg):
-        hpe_coords, hpe_dist = self.evaluate(msg.latitude, msg.longitude, msg.altitude)
+        hpe_coords, hpe_dist = self._evaluate(msg.latitude, msg.longitude, msg.altitude)
         self.get_logger().info(f'lat: {msg.latitude}, lon: {msg.longitude}, hpe_coords: {hpe_coords}, hpe_dist: {hpe_dist} m')
         logger.info(f' lat: {msg.latitude}, lon: {msg.longitude}, hpe_coords: {hpe_coords}, hpe_dist: {hpe_dist} m')
 
 
-    def evaluate(self, lat, lon, alt):
+    def _evaluate(self, lat, lon, alt):
         utm_easting, utm_northing = get_utm_coordinates(lat, lon)
 
         hpe_coords = np.array(
