@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from rclpy.parameter import Parameter
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 from sensor_msgs.msg import NavSatFix
 
 import numpy as np
@@ -9,7 +9,6 @@ import logging
 import pytz
 from datetime import datetime
 import os
-
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -67,7 +66,11 @@ class GnssEval(Node):
             file_handler.setFormatter(logging.Formatter('%(asctime)s,%(message)s'))
             logger.addHandler(file_handler)
 
-        self.sub_fix = self.create_subscription(NavSatFix, '/fix', self.sub_fix_callback, 10)
+        qos_profile = QoSProfile(
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
+            depth=10
+        )
+        self.sub_fix = self.create_subscription(NavSatFix, '/fix', self.sub_fix_callback, qos_profile)
 
     
     def sub_fix_callback(self, msg):
@@ -87,9 +90,6 @@ class GnssEval(Node):
         hpe_dist = np.sqrt(np.sum(hpe_coords**2))
 
         return hpe_dist, hpe_dist
-
-
-
 
 def main(args=None):
     rclpy.init(args=args)
